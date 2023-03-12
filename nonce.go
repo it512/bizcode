@@ -9,3 +9,9 @@ func nonce(buf []byte) {
 		buf[i] = chars[b%62]
 	}
 }
+
+func nonce2(n int) []byte {
+	b := make([]byte, n)
+	nonce(b)
+	return b
+}

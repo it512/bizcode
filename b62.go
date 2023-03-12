@@ -2,14 +2,16 @@ package bizcode
 
 var chars string = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 
-func b62(num uint16) (int, []byte) {
-	bytes := make([]byte, 3)
+func b62(num uint16) []byte {
+	bytes := []byte{'0', '0', '0'}
+	i := 0
 	for num > 0 {
-		bytes = append(bytes, chars[num%62])
+		bytes[i] = chars[num%62]
 		num = num / 62
+		i++
 	}
 	reverse(bytes)
-	return len(bytes), bytes
+	return bytes
 }
 
 /*

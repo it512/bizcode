@@ -33,8 +33,7 @@ var src = newEntropyPool()
 const layout = "20060102150405"
 
 var (
-	z     = []byte{'0', '0'}
-	empty = []byte("00000000000000000000000000000000")
+	z = []byte{'0', '0'}
 )
 
 func New() string {
@@ -42,7 +41,7 @@ func New() string {
 }
 
 func NewBy(typ []byte) string {
-	return str(build(bytes.Clone(empty), typ))
+	return str(build(make([]byte, 0, 32), typ))
 }
 
 func str(c []byte) string {
@@ -55,24 +54,18 @@ func str(c []byte) string {
 func build(c []byte, typ []byte) []byte {
 
 	t := time.Now()
-	t.AppendFormat(c[:0], layout)
+	b := t.AppendFormat(c[:0], layout)
 
 	if len(typ) >= 2 {
-		c[14] = typ[0]
-		c[15] = typ[1]
+		b = append(b, typ[0], typ[1])
+	} else {
+		b = append(b, z...)
 	} // 14 +2 = 16
 
-	nonce(c[16:28])
-
-	c[28] = x(c[0:28])
-
-	i := crc16(c)
-	_, e := b62(i)
-	c[32-3] = e[0]
-	c[32-2] = e[1]
-	c[32-1] = e[2]
-
-	return c
+	b = append(b, nonce2(12)...)
+	b = append(b, x(b))
+	b = append(b, b62(crc16(b))...)
+	return b
 
 }
 
